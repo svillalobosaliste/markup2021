@@ -1,0 +1,174 @@
+---
+title: "Effects of correlation levels on linear regression estimators: A simulation study."
+author: "Sofía Villalobos Aliste"
+date: "23-10-2021"
+output: html_document
+---
+
+# 1. Aim
+
+In this document, we will compare the mean square errors of the parameters of a linear regression model with two predictors drawn from a sample of n = 26, in two situations: First, when the two variables have a level of correlation of 0.1, and when they have a level of correlation of 0.9.
+
+
+# 2. Set up  
+
+### 2.1 Fixing random seed.  
+Set the seed for replicable results.
+```{r}
+set.seed(161026768)
+```
+
+### 2.2 Number of simulations.  
+Here we define the number of replications.
+```{r}
+reps<-1000 
+```
+
+
+### 2.3 Loading packages
+```{r message=FALSE, warning=FALSE}
+library(MASS)
+library(kableExtra)
+```
+
+
+# 3. Parameters and storage
+```{r}
+b1<-5.8 #Coefficient beta 1
+b2<-4   #Coefficient beta 2
+n<-26   #Sample size
+r1<-.1  #Correlation level
+r9<-.9  #Correlation level
+
+par.est1<-matrix(NA,nrow=reps,ncol=6) #Storage for correlation =.1
+par.est9<-matrix(NA,nrow=reps,ncol=6) #Storage for correlation =.2
+```
+
+
+
+# 4. Draw samples 
+
+### 4.1 Draw samples for correlation = 0.1
+```{r}
+data<-mvrnorm(n=n, mu=c(0, 0), Sigma=matrix(c(1, r1, r1, 1), nrow=2), empirical=TRUE)
+V1<-data[, 1]  # standard normal (mu=0, sd=1)
+V2<-data[, 2]
+
+for(i in 1:reps){ 
+  Y<-V1*b1+V2*b2+rnorm(n,0,1) #The true DGP, with N(0,1) error
+  model1<-lm(Y~V1+V2) 
+  vcv1<-vcov(model1)
+  par.est1[i,1]<-model1$coef[1] 
+  par.est1[i,2]<-model1$coef[2] 
+  par.est1[i,3]<-model1$coef[3]
+  
+  par.est1[i,4]<-sqrt(diag(vcv1)[1]) 
+  par.est1[i,5]<-sqrt(diag(vcv1)[2])
+  par.est1[i,6]<-sqrt(diag(vcv1)[3])
+}
+```
+
+### 4.2 Draw sample for correlation = 0.9
+```{r}
+data<-mvrnorm(n=n, mu=c(0, 0), Sigma=matrix(c(1, r9, r9, 1), nrow=2), empirical=TRUE)
+V1<-data[, 1]  # standard normal (mu=0, sd=1)
+V2<-data[, 2]
+
+for(i in 1:reps){ 
+  Y<-V1*b1+V2*b2+rnorm(n,0,1) 
+  model9<-lm(Y~V1+V2) 
+  vcv9<-vcov(model9)
+  par.est9[i,1]<-model9$coef[1] #INTERCEPTO
+  par.est9[i,2]<-model9$coef[2] 
+  par.est9[i,3]<-model9$coef[3]
+  
+  par.est9[i,4]<-sqrt(diag(vcv9)[1]) #SE INTERCEPTO
+  par.est9[i,5]<-sqrt(diag(vcv9)[2])
+  par.est9[i,6]<-sqrt(diag(vcv9)[3])
+}
+```
+
+
+# 5. Assessment: Mean square error 
+```{r}
+#MSE for Correlation = 0.1
+mse.beta1_c1<-mean((par.est1[,2]-b1)^2)
+mse.beta2_c1<-mean((par.est1[,3]-b2)^2)
+
+#MSE for correlation = 0.9
+mse.beta1_c9<-mean((par.est9[,2]-b1)^2)
+mse.beta2_c9<-mean((par.est9[,3]-b2)^2)
+
+corr01<-cbind("0.1",mse.beta1_c1,mse.beta2_c1)
+corr09<-cbind("0.9",mse.beta1_c9,mse.beta2_c9)
+
+output<-rbind(corr01,corr09)
+colnames(output)<-c("Corr","B1","B2")
+kable(output,"html",digits = 4) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),full_width = T)
+```
+
+# 6. Replication
+
+Set a different seed for replication.
+```{r}
+set.seed(834844)
+```
+
+```{r}
+data<-mvrnorm(n=n, mu=c(0, 0), Sigma=matrix(c(1, r1, r1, 1), nrow=2), empirical=TRUE)
+V1<-data[, 1]  # standard normal (mu=0, sd=1)
+V2<-data[, 2]
+
+for(i in 1:reps){ 
+  Y<-V1*b1+V2*b2+rnorm(n,0,1) #The true DGP, with N(0,1) error
+  model1<-lm(Y~V1+V2) 
+  vcv1<-vcov(model1)
+  par.est1[i,1]<-model1$coef[1] 
+  par.est1[i,2]<-model1$coef[2] 
+  par.est1[i,3]<-model1$coef[3]
+  
+  par.est1[i,4]<-sqrt(diag(vcv1)[1]) 
+  par.est1[i,5]<-sqrt(diag(vcv1)[2])
+  par.est1[i,6]<-sqrt(diag(vcv1)[3])
+}
+data<-mvrnorm(n=n, mu=c(0, 0), Sigma=matrix(c(1, r9, r9, 1), nrow=2), empirical=TRUE)
+V1<-data[, 1]  # standard normal (mu=0, sd=1)
+V2<-data[, 2]
+
+for(i in 1:reps){ 
+  Y<-V1*b1+V2*b2+rnorm(n,0,1) 
+  model9<-lm(Y~V1+V2) 
+  vcv9<-vcov(model9)
+  par.est9[i,1]<-model9$coef[1] #INTERCEPTO
+  par.est9[i,2]<-model9$coef[2] 
+  par.est9[i,3]<-model9$coef[3]
+  
+  par.est9[i,4]<-sqrt(diag(vcv9)[1]) #SE INTERCEPTO
+  par.est9[i,5]<-sqrt(diag(vcv9)[2])
+  par.est9[i,6]<-sqrt(diag(vcv9)[3])
+}
+mse.beta1_c1<-mean((par.est1[,2]-b1)^2)
+mse.beta2_c1<-mean((par.est1[,3]-b2)^2)
+
+#MSE for correlation = 0.9
+mse.beta1_c9<-mean((par.est9[,2]-b1)^2)
+mse.beta2_c9<-mean((par.est9[,3]-b2)^2)
+
+corr01<-cbind("0.1",mse.beta1_c1,mse.beta2_c1)
+corr09<-cbind("0.9",mse.beta1_c9,mse.beta2_c9)
+
+output<-rbind(corr01,corr09)
+colnames(output)<-c("Corr","B1","B2")
+kable(output,"html",digits = 4) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),full_width = T)
+```
+
+We can see that the results are similar to the ones obtained in the original study.
+
+# END OF DOCUMENT
+
+```{r}
+sessionInfo()
+```
+
