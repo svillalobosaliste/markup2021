@@ -1,0 +1,130 @@
+---
+title: "Chile in a nutshell"
+author: "Sofía Villalobos Aliste"
+date: "18-02-2022"
+output: ioslides_presentation
+logo: chile.jpg
+bibliography: references.bib
+---
+
+## Outline
+1. Where is Chile
+2. Geography: Chile in two minutes
+3. Human Development Index
+4. Gender Development Index
+5. Things about Chile
+6. An histogram
+7. References
+
+
+```{r include=F}
+setwd("C:/Users/svill/Desktop/mg/3_markup/pres")
+library(readr)
+library(tidyverse)
+library(DT)
+library(dplyr)
+library(vembedr)
+library(devtools)
+devtools::install_github("ijlyttle/vembedr")
+```
+
+## Chile
+
+<center>
+
+<img src= chile1.jpg width=100%>
+
+
+## Geography: Chile in two minutes
+
+```{r echo=F}
+embed_youtube("Bn5XMxKRuys")
+```
+
+
+## Human Development Index (HDI)
+
+```{r cache=TRUE, echo = FALSE, out.width="10%"}
+
+
+df <- read_csv("df.csv", col_types = cols(Country = col_skip(), 
+   ISO_Code = col_skip(), Level = col_skip(), 
+   GDLCODE = col_skip()))
+
+datatable(df,options=list(pageLength=5))
+
+```
+
+## How to calculate the HDI
+
+The HDI is calculated as the geometric mean (equally-weighted) of life expectancy, education, 
+and Gross National Income (GNI) per capita, as follows:
+
+$$HDI= I_{Health}*I_{Education}*I_{Income}$$
+
+For Chile, HDI is = 0.851, which place it in rank 43 worldwide.
+
+
+## Gender-related Development Index (GDI)
+
+While the HDI measures average achievement, GDI adjust the average achievement to reflect inequalities between men and women. The female and male HDI values are the geometric means of the three dimensional indices for each gender, and then the GDI is simply the ratio of female HDI value to male HDI value, as follows:
+
+$$\begin{aligned}
+HDI_{f}&=&I_{Health_{f}} *I_{Education_{f}} *I_{Income_{f}}\\\
+HDI_{m}&=&I_{Health_{m}} *I_{Education_{m}} *I_{Income_{m}}\\\
+\end{aligned}$$
+
+
+$$GDI= \frac{HDI_{f}}{HDI_{m}} $$
+
+
+
+
+
+## DIY: GDI of Chile
+```{r eval=F}
+#Female HDI 
+f_hdi<-0.833 
+#Male HDI  
+m_hdi<-0.865 
+#GDI
+f_hdi/m_hdi
+```
+
+## Answer
+
+$$\begin{aligned}
+GDI_{Chile}&=&\frac{HDI_{female}}{HDI_{male}}\\\\
+&=& \frac{0.833}{0.865}\\\\
+&=& 0.9630058
+\end{aligned}$$
+
+
+
+## How to interpret it
+
+The GDI groups are based on the absolute deviation of GDI from gender parity, Countries with high equality in HDI achievements between women and men and are classified as group 1 (There are 5 groups, with 5 being the group with the largest gender disparity).
+
+For Chile the GDI is= 0.963, which places it in group 1, where the countries with the more gender parity are. 
+
+All information taken from @owidhumandevelopmentindex and @bibtexkey
+
+
+## Things about Chile
+
+<div class="columns-2">
+**At 7,500 feet, Chile’s Atacama Desert is the driest place on Earth** with a landscape of surreal beauty. Some parts of the region have never received a drop of rain and the Desert is probably also the oldest desert on earth. The desert runs through a 1,000 kilometer long strip of land between the Andes Mountains and the Pacific Ocean.  
+  
+**Chile is one of the longest countries in the world** with a coastline of around 6500 km long. However, it is also one of the narrowest in the world with a width of just over 200 km. Most of the best-known beach resorts, or balnearios, are in central Chile, from El Norte Chico South past the metropolitan district to the northern reaches of Region VII, region del Maule. Chile has a mild Mediterranean climate where visitors can enjoy warm to hot days and cooler nights in the summer.
+</div>
+
+
+## Histogram
+
+```{r}
+x<-rnorm(1000,0,1)
+hist(x)
+```
+
+## References
+
